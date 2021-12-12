@@ -11,7 +11,11 @@ int fontHeight;
 #define WINDOW_WIDTH FRAMEBUFFER_WIDTH * FONT_SIZE * 2
 #define WINDOW_HEIGHT FRAMEBUFFER_HEIGHT * FONT_SIZE
 
-#define WINDOW_NAME "Prototype ASCII engine"
+#define WINDOW_NAME "ArPG"
+SDL_Renderer* renderer;
+
+int mouseX;
+int mouseY;
 
 int cameraX, cameraY;
 void Renderer_Init();

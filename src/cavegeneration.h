@@ -13,13 +13,6 @@ typedef enum CaveType_t
 	RPG_CAVETYPE_RUINS //the rarest type, full of posessed skeletons and shit
 }CaveType_t;
 
-
-// mapobj_t CaveEntranceType = 
-// {
-// 	.name = "Cave Entrance",
-// 	.character = (char_t){'#', 3}
-// };
-
 typedef struct Cave_t
 {
 	char_t* tiles;

@@ -1,7 +1,6 @@
 #include "renderer.h"
 TTF_Font* font;
 SDL_Window* window;
-SDL_Renderer* renderer;
 
 
 char_t frameBuffer[FRAMEBUFFER_WIDTH][FRAMEBUFFER_HEIGHT] = {{' '}};
@@ -13,6 +12,11 @@ SDL_Texture* textures[255];
 
 void Renderer_Init()
 {
+    SDL_version version;
+    SDL_GetVersion(&version);
+    
+    printf("running SDL%d.%d.%d\n", version.major, version.minor, version.patch);
+
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_PrintSDLError("Renderer_Init");
 
@@ -221,6 +225,11 @@ void Window_PollEvents()
         case SDL_WINDOWEVENT:
             HandleWindowEvent(event);
             break;
+        case SDL_MOUSEMOTION:   
+            mouseX = event.motion.x;
+            mouseY = event.motion.y;
+            break;
+
         
         default:
             break;

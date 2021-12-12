@@ -1,13 +1,13 @@
 #include "input.h"
-
+#include "renderer.h"
 void Input_GetMouse(int* x, int* y)
 {
-	int mx, my;
-	SDL_GetMouseState(&mx, &my);
-
+	int mx = mouseX;
+	int my = mouseY;
 	mx /= FONT_SIZE;
 	my /= fontHeight;
 
+	
 	*x = mx;
 	*y = my;
 }
