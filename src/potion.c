@@ -1,7 +1,7 @@
 #include "potion.h"
 #include "player.h"
 #include "ui.h"
-void Potion_DoEffect(mapobj_t* object, Item_t* potion);
+void Potion_DoEffect(struct mapobj_t* object, Item_t* potion);
 
 char potionNames[RPG_POTION_COUNT][16] = 
 {
@@ -38,7 +38,7 @@ void ((*potionFuncs[RPG_POTION_COUNT])(mapobj_t* user)) =
 	Potion_Health
 };
 
-void Potion_TouchPlayer(mapobj_t* potion)
+void Potion_TouchPlayer(struct mapobj_t* potion)
 {
 	int potionType = rand() % RPG_POTION_COUNT;
 

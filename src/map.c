@@ -97,7 +97,7 @@ void Map_GenerateChunks()
 					float nx = x/64.0f - 0.5 + (chunk.x);
 					float ny = y/64.0f - 0.5 + (chunk.y);
 					
-					float frequency = 1.5;
+					float frequency = 0.5f;
 
 					float n =    frequency * noise(frequency * nx, frequency * ny);
 						+  0.5 * noise(2 * frequency * nx, 2 * frequency * ny);
@@ -147,7 +147,9 @@ void Map_ReloadChunks()
 
 void Map_Generate()
 {
-	open_simplex_noise(levelNumber, &ctx);
+	time_t seed;
+	time(&seed);
+	open_simplex_noise(seed, &ctx);
 	Map_GenerateChunks();
 }
 

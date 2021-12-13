@@ -16,6 +16,10 @@ void Renderer_Init()
     SDL_GetVersion(&version);
     
     printf("running SDL%d.%d.%d\n", version.major, version.minor, version.patch);
+#ifdef linux
+    printf("warning: if you're using proprietary NVIDIA drivers the game may crash during some points\n");
+#endif
+
 
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_PrintSDLError("Renderer_Init");

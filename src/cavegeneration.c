@@ -1,12 +1,19 @@
 #include "cavegeneration.h"
 #include "rope.h"
 #include <sys/stat.h>
+#include "open-simplex-noise.h"
+#include <time.h>
+
+struct osx_context;
+
+struct osx_context* ctx;
+
 char_t* tilemap;
 
 Cave_t loadedCave;
 
-int deathLimit = 3;
-int birthLimit = 4;
+int deathLimit = 4;
+int birthLimit = 3;
 
 int countAliveNeighbours(bool* map, int x, int y){
 
@@ -42,7 +49,7 @@ int countAliveNeighbours(bool* map, int x, int y){
 	return count;
 
 }
-
+int j;
 bool* doSimulationStep(bool* original)
 {
 	bool* newCells = malloc(loadedCave.w * loadedCave.h);
@@ -52,46 +59,61 @@ bool* doSimulationStep(bool* original)
 		for(int y = 0; y < loadedCave.h; y++)
 		{
 			int nbs = countAliveNeighbours(original, x, y);
-			if(original[(x*loadedCave.w)+y])
+			int i = (x*loadedCave.w)+y;
+
+			if(nbs > 4)
 			{
-				newCells[(x*loadedCave.w)+y] = !(nbs < deathLimit);
-			}else
+				newCells[i] = true;
+			}else if (nbs < 4)
 			{
-				newCells[(x*loadedCave.w)+y] = (nbs > birthLimit);
+				newCells = false;
 			}
+			
+
+			// if(original[(x*loadedCave.w)+y])
+			// {
+			// 	newCells[(x*loadedCave.w)+y] = !(nbs < deathLimit);
+			// }else
+			// {
+			// 	newCells[(x*loadedCave.w)+y] = (nbs > birthLimit);
+			// }
 		}
 	}
+	// free(original);
 	return newCells;
 }
 
 
 char_t* tiles;
 
-void Create()
+void Generate()
 {
-	// Cave_t cave;
-	loadedCave.w = 64 + rand() % 64;
-	loadedCave.h = 64 + rand() % 64;
-	loadedCave.tiles = malloc(sizeof(char_t) * (loadedCave.w * loadedCave.h));
+	bool* cells = NULL;
 
-	
-	bool* cells = malloc(loadedCave.w * loadedCave.h);
+	int attempts;
+	while(cells == NULL)
+	{
+		cells = malloc(loadedCave.w * loadedCave.h);
+		attempts++;
+		if(attempts > 50)
+		{
+			printf("failed to allocate the %d bytes needed to create tilemap? what???\n", loadedCave.w*loadedCave.h);
+			break;
+		}
+	}
 
-	float aliveChance = 0.7f;
+	float aliveChance = 40;
 	for(int x = 0; x < loadedCave.w; x++)
 	{
 		for(int y = 0; y < loadedCave.h; y++)
 		{
 			float chance = randomFloat();
 
-			if(chance > aliveChance)
-			{
-				cells[(x*loadedCave.w)+y] = true;
-			}
+			cells[(x*loadedCave.w)+y] = (chance*100) < aliveChance;
 		}
 	}
 
-	for(int i = 0; i < 50; i++)
+	for(int i = 0; i < 15; i++)
 	{
 		cells = doSimulationStep(cells);
 	}
@@ -103,11 +125,42 @@ void Create()
 	{
 		for(int y = 0; y < loadedCave.h; y++)
 		{
+			float nx = ((float)x/(float)loadedCave.w) - 0.5f;
+			float ny = ((float)y/(float)loadedCave.h) - 0.5f;
+
+			float color = 1 + open_simplex_noise2(ctx, nx, ny) * 3;
+			floor.color = (uint8_t)color;
 			loadedCave.tiles[(y*loadedCave.h)+x] = (cells[(x*loadedCave.w)+y]) ? wall : floor;
-			printf("%c", loadedCave.tiles[(y*loadedCave.h)+x]);
+			printf("%c", loadedCave.tiles[(y*loadedCave.h)+x].character);
 		}
 		printf("\n");
 	} 
+
+	for(int x = 0; x < loadedCave.w; x++)
+	{
+		for(int y = 0; y < loadedCave.h; y++)
+		{
+			int n = countAliveNeighbours(cells, x, y);
+			if(n == 0)
+			{
+				player->x = x;
+				player->y = y;
+			}
+		}
+	}
+}
+
+void Create()
+{
+	time_t seed;
+	time(&seed);
+	open_simplex_noise(seed, &ctx);
+	// Cave_t cave;
+	loadedCave.w = 64 + rand() % 64;
+	loadedCave.h = 64 + rand() % 64;
+	loadedCave.tiles = malloc(sizeof(char_t) * (loadedCave.w * loadedCave.h));
+
+	Generate();
 }
 
 
@@ -119,7 +172,6 @@ void Cave_HandleCave(Cave_t cave)
 	Renderer_WorldToSCreen(x, y, &sx, &sy);
 
 	int radius = 4;
-	int outerRing = 3;
 	for(x = 0; x < FRAMEBUFFER_WIDTH; x++)
 	{
 		for(y = 0; y < FRAMEBUFFER_HEIGHT; y++)
@@ -165,6 +217,7 @@ void Cave_Generate(int w, int h)
 
 void Cave_Render()
 {
+
 	int offx = (cameraX) - FRAMEBUFFER_WIDTH / 2;
     int offy = (cameraY) - FRAMEBUFFER_HEIGHT / 2;
 
@@ -172,7 +225,7 @@ void Cave_Render()
 	{
 		for(int y = 0; y < loadedCave.h; y++)
 		{
-			char_t character = loadedCave.tiles[(x*loadedCave.w) + y];
+			char_t character = loadedCave.tiles[(y*loadedCave.h) + x];
 			Renderer_SetPixel(x - offx, y - offy, character);
 		}
 	}

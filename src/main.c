@@ -12,6 +12,9 @@ void DrawMainGame()
 }
 int main()
 {
+    time_t seed;
+    time(&seed);
+    srand(seed);
     Renderer_Init();
     Color_LoadPalette();
 

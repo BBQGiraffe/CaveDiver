@@ -1,6 +1,9 @@
 #ifndef __RPG_ITEM__
 #define __RPG_ITEM__
 #include "mapobj.h"
+
+struct mapobj_t;
+
 typedef struct Item_t
 {
 	char_t character;

@@ -1,5 +1,4 @@
 #include "ui.h"
-#include "player.h"
 
 char position[32];
 char message[64];
@@ -128,4 +127,6 @@ void UI_Draw()
     UI_DrawPlayerInfo();
     UI_HandleSelection();
     UI_PrintMessage();
+
+    Pride_DrawFlags();
 }
