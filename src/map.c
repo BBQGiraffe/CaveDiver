@@ -97,7 +97,7 @@ void Map_GenerateChunks()
 					float nx = x/64.0f - 0.5 + (chunk.x);
 					float ny = y/64.0f - 0.5 + (chunk.y);
 					
-					float frequency = 0.5f;
+					float frequency = 1;
 
 					float n =    frequency * noise(frequency * nx, frequency * ny);
 						+  0.5 * noise(2 * frequency * nx, 2 * frequency * ny);

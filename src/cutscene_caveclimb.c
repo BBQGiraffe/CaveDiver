@@ -41,6 +41,7 @@ void Cutscene_CaveClimb_Render()
 	{
 		Cave_Generate(320, 240);
 		Map_SetRenderFunc(&Cave_Render);
+		Map_SetCollisionFunc(&Cave_Walkable);
 		gamestate = RPG_GAMESTATE_GAME;
 	}
 }

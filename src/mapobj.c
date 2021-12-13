@@ -23,6 +23,11 @@ mapobj_t* MapObj_Create(mapobj_t template, int x, int y)
     objects[i] = new;
     m_entityCount++;
 
+    if(new->constructorFunc != NULL)
+    {
+        new->constructorFunc(new);
+    }
+
     return new;
 }
 

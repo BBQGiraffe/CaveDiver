@@ -15,7 +15,7 @@ typedef enum CaveType_t
 
 typedef struct Cave_t
 {
-	char_t* tiles;
+	// char_t tiles[256*256];
 	int w, h;
 	int entranceX, entranceY;
 	uint64_t id;
@@ -24,7 +24,7 @@ typedef struct Cave_t
 }Cave_t;
 
 
-
+bool Cave_Walkable(int x, int y);
 void Cave_Generate(int w, int h);
 void Cave_Render();
 

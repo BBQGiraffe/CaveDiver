@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include "open-simplex-noise.h"
 #include <time.h>
+#include "objtypes.h"
 
 struct osx_context;
 
@@ -50,10 +51,10 @@ int countAliveNeighbours(bool* map, int x, int y){
 
 }
 int j;
+bool newCells[256*256];
+
 bool* doSimulationStep(bool* original)
 {
-	bool* newCells = malloc(loadedCave.w * loadedCave.h);
-
 	for(int x = 0; x < loadedCave.w; x++)
 	{
 		for(int y = 0; y < loadedCave.h; y++)
@@ -66,7 +67,7 @@ bool* doSimulationStep(bool* original)
 				newCells[i] = true;
 			}else if (nbs < 4)
 			{
-				newCells = false;
+				newCells[i] = false;
 			}
 			
 
@@ -83,17 +84,15 @@ bool* doSimulationStep(bool* original)
 	return newCells;
 }
 
-
-char_t* tiles;
-
+char_t tiles[256*256];
 void Generate()
 {
-	bool* cells = NULL;
+	bool cells[256*256];
 
 	int attempts;
 	while(cells == NULL)
 	{
-		cells = malloc(loadedCave.w * loadedCave.h);
+		// cells = malloc(loadedCave.w * loadedCave.h);
 		attempts++;
 		if(attempts > 50)
 		{
@@ -102,7 +101,7 @@ void Generate()
 		}
 	}
 
-	float aliveChance = 40;
+	float aliveChance = 55;
 	for(int x = 0; x < loadedCave.w; x++)
 	{
 		for(int y = 0; y < loadedCave.h; y++)
@@ -115,7 +114,12 @@ void Generate()
 
 	for(int i = 0; i < 15; i++)
 	{
-		cells = doSimulationStep(cells);
+		doSimulationStep(cells);
+		
+		for(int j = 0; j < 256*256; j++)
+		{
+			cells[j] = newCells[j];
+		}
 	}
 
 	char_t wall = {.character = '#', .color = 1};
@@ -125,15 +129,15 @@ void Generate()
 	{
 		for(int y = 0; y < loadedCave.h; y++)
 		{
-			float nx = ((float)x/(float)loadedCave.w) - 0.5f;
-			float ny = ((float)y/(float)loadedCave.h) - 0.5f;
+			float nx = ((float)x*2/(float)loadedCave.w) - 0.5f;
+			float ny = ((float)y*2/(float)loadedCave.h) - 0.5f;
 
 			float color = 1 + open_simplex_noise2(ctx, nx, ny) * 3;
 			floor.color = (uint8_t)color;
-			loadedCave.tiles[(y*loadedCave.h)+x] = (cells[(x*loadedCave.w)+y]) ? wall : floor;
-			printf("%c", loadedCave.tiles[(y*loadedCave.h)+x].character);
+			tiles[(y*loadedCave.h)+x] = (cells[(x*loadedCave.w)+y]) ? wall : floor;
+			// printf("%c", tiles[(y*loadedCave.h)+x].character);
 		}
-		printf("\n");
+		// printf("\n");
 	} 
 
 	for(int x = 0; x < loadedCave.w; x++)
@@ -150,6 +154,45 @@ void Generate()
 	}
 }
 
+bool Cave_Walkable(int x, int y)
+{
+	return tiles[(y*loadedCave.h) + x].character == '#';
+}
+
+void PlaceObjects(int neighborCount, int max,  int distanceFromPlayer, mapobj_t type)
+{
+	int maxEnemies = 32;
+	int count = 0;
+
+	int attempts = 500;
+
+	for(int i = 0; i < maxEnemies; i++)
+	{
+		for(int j = 0; j < attempts; j++)
+		{
+			int x = rand() % loadedCave.w;
+			int y = rand() % loadedCave.h;
+
+
+			int distance = Math_Distance(x, y, player->x, player->y);
+
+			if(distance >= distanceFromPlayer)
+			{
+				int n = countAliveNeighbours(newCells, x, y);
+
+				if(n == neighborCount)
+				{
+					MapObj_Create(type, x, y);
+					break;
+				}
+			}
+
+
+
+		}
+	}
+}
+
 void Create()
 {
 	time_t seed;
@@ -158,9 +201,12 @@ void Create()
 	// Cave_t cave;
 	loadedCave.w = 64 + rand() % 64;
 	loadedCave.h = 64 + rand() % 64;
-	loadedCave.tiles = malloc(sizeof(char_t) * (loadedCave.w * loadedCave.h));
+	// loadedCave.tiles = malloc(sizeof(char_t) * (loadedCave.w * loadedCave.h));
 
 	Generate();
+
+	PlaceObjects(2, 32, 10, PotionType);
+	PlaceObjects(0, 64, 50, ZombieType);
 }
 
 
@@ -225,7 +271,7 @@ void Cave_Render()
 	{
 		for(int y = 0; y < loadedCave.h; y++)
 		{
-			char_t character = loadedCave.tiles[(y*loadedCave.h) + x];
+			char_t character = tiles[(y*loadedCave.h) + x];
 			Renderer_SetPixel(x - offx, y - offy, character);
 		}
 	}
