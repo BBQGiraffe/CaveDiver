@@ -164,7 +164,7 @@ void PlaceObjects(int neighborCount, int max,  int distanceFromPlayer, mapobj_t 
 	int maxEnemies = 32;
 	int count = 0;
 
-	int attempts = 500;
+	int attempts = 5000;
 
 	for(int i = 0; i < maxEnemies; i++)
 	{
@@ -206,7 +206,7 @@ void Create()
 	Generate();
 
 	PlaceObjects(2, 32, 10, PotionType);
-	PlaceObjects(0, 64, 50, ZombieType);
+	PlaceObjects(0, 223, 3, ZombieType);
 }
 
 

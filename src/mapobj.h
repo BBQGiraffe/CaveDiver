@@ -17,39 +17,10 @@ typedef struct mapobj_t
     int dx, dy;
     MapObjType_t type;
 
-    bool canInteract;
-    char interactionText[32];
 
-    int16_t health;
-    int16_t maxHealth;
+    //inheritance!!
+    uint8_t* classData;   
 
-    //the ms elapsed in game when the object was created
-    uint64_t startTime;
-
-    //the ms elapsed since the objects was created
-    uint64_t msActive;
-
-    uint64_t framesActive;
-
-    /*      Container/Door related vars     */
-
-    bool isOpen;
-    bool isLocked;
-
-    /*      NPC related vars        */
-    int sightRange;
-    int meleeDamage;
-    int attackTime;
-
-    /*      Player related vars     */
-
-    int p_mana;
-    int p_maxMana;
-    int p_manaRegenTime;    
-    int p_manaRegenTimeElapsed;
-
-
-    /*      Pickup related vars     */
 
     void (*touchPlayerFunc)(struct mapobj_t* object);
     void (*interactionFunc)(struct mapobj_t* object);
@@ -72,6 +43,8 @@ typedef struct mapobj_t
 struct mapobj_t* objects[RPG_MAXOBJECTS];
 int m_entityCount;
 struct mapobj_t* player;
+
+void MapObj_SetClassData(mapobj_t* obj, void* data, int len);
 
 mapobj_t* MapObj_Create(mapobj_t classtype, int x, int y);
 void MapObj_Render();

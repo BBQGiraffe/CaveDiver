@@ -4,6 +4,7 @@
 #include "rope.h"
 #include "cavegeneration.h"
 void Player_HandleInput(mapobj_t* player);
+void Player_CreateClassData(mapobj_t* player);
 
 
 #define RPG_PLAYER_MANA_LIMIT 32
@@ -24,6 +25,7 @@ mapobj_t PlayerType = {
     .realTimeUpdateFunc = Player_HandleInput,
     .health = 100,
     .maxHealth = 100,
+    .constructorFunc = &Player_CreateClassData,
 
     //set dx so that if you shoot an arrow before moving it isn't frozen
     .dx = 1,
@@ -142,6 +144,12 @@ void Player_HandleDeath()
 void Player_UpdatePlayer(mapobj_t* player)
 {
 
+    PlayerData_t* playerData = (PlayerData_t*)player->classData;
+    printf("%s %d\n", playerData->testString, playerData->sex); 
+
+
+    playerData->sex++;
+    
     if(player_poisoned && player->framesActive % 4 == 0)
     {
         player->health -= 5;
@@ -255,4 +263,16 @@ bool Player_GiveItem(Item_t item)
     player_items[i] = new;
 
     return true;
+}
+
+
+void Player_CreateClassData(mapobj_t* player)
+{
+    PlayerData_t data = 
+    {
+        .sex = 69,
+        .testString = "sex sex sexx!!"
+    };
+
+    MapObj_SetClassData(player, &data, sizeof(PlayerData_t));
 }

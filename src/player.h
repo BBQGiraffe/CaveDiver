@@ -7,16 +7,11 @@
 #define RPG_PLAYER_MAX_ITEMS 12
 
 
-struct PlayerInfo_t
+typedef struct PlayerData_t
 {
-	int mana;
-	int maxMana;
-	int level;
-
-	//time until we start mana regen
-	int manaRegenTime;
-	int manaRegenTimeElapsed;
-};
+	char testString[32];
+	int sex;
+}PlayerData_t;
 
 //player inventory
 Item_t* player_items[RPG_PLAYER_MAX_ITEMS];

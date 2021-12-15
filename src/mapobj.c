@@ -31,6 +31,13 @@ mapobj_t* MapObj_Create(mapobj_t template, int x, int y)
     return new;
 }
 
+void MapObj_SetClassData(mapobj_t* obj, void* data, int len)
+{
+    SDL_assert(len < 128);
+    memset(obj->classData, 0x00, 128);
+    memcpy(obj->classData, data, len);
+}
+
 int offx, offy;
 
 void MapObj_Render()

@@ -31,7 +31,7 @@ void Zombie_Constructor(mapobj_t* zombie)
 mapobj_t ZombieType = 
 {
 	.name = "Zombie",
-	.character = {.character = 'Z', .color = 10},
+	.character = {.character = 'Z', .color = 11},
 	.updateFunc = &Zombie_Update,
 	.constructorFunc = &Zombie_Constructor
 };

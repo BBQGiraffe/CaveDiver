@@ -128,5 +128,5 @@ void UI_Draw()
     UI_HandleSelection();
     UI_PrintMessage();
 
-    Pride_DrawFlags();
+    // Pride_DrawFlags();
 }
